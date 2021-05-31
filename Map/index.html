@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Latvian Sea maps</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+            integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+            crossorigin=""/>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand" href="#">
+              <img src="icon.png" width="30" height="30" class="d-inline-block align-top" alt="">
+              Latvian sea maps
+            </a>
+          </nav>
+        <div class="p-3 mb-2 bg-info text-dark">
+                <div class='container-fluid py-5"' id="map" style="width: 1200px; height: 800px;"></div>
+                <script>
+                    var mymap = L.map('map').setView([56.946285, 24.105078], 7);
+                    var seaBed = 'https://dpps.viss.gov.lv/DPPS.REQ/URN_IVIS_100001_ISS-VIDM-Juras_planojums_Nogulumi-v1-0/guest/URN_IVIS_100273_LIC-5F6EE1248B2C7849B164DB83B1ED0B95?';
+                    var spatialData = 'https://dpps.viss.gov.lv/DPPS.REQ/URN_IVIS_100001_ISS-VIDM-MSP03_WMS_service-v1-0/guest/URN_IVIS_100273_LIC-16D8B40E22187247A59C3B37E19E66C0?';
+                    var seaUsageRulesRegulatory = 'https://dpps.viss.gov.lv/DPPS.REQ/URN_IVIS_100001_ISS-VIDM-MSP02_WMS_service-v1-0/guest/URN_IVIS_100273_LIC-E11898390C6DE34093A919985326EA8A?';
+                    var seaUsageRulesMaritime = 'https://dpps.viss.gov.lv/DPPS.REQ/URN_IVIS_100001_ISS-VIDM-MSP01_WMS_service-v1-0/guest/URN_IVIS_100273_LIC-A8CCB748FAF00740895E37FD86C7C5C8?';
+                    var fishes = 'https://dpps.viss.gov.lv/DPPS.REQ/URN_IVIS_100001_ISS-VIDM-Juras_planojums_Nozveja-v1-0/guest/URN_IVIS_100273_LIC-2B54A09610951A41924779B6A21D7451?';
+                    var seismicProfiles = 'http://geoserver.lvgmc.lv/geoserver/ge/wms?';
+
+                    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                        maxZoom: 18,
+                        id: 'mapbox/streets-v11',
+                        tileSize: 512,
+                        zoomOffset: -1,
+                        noWrap: true,
+                        minZoom: 3,
+                        maxZoom: 9
+                    }).addTo(mymap);
+
+                    var primaryLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                        maxZoom: 18,
+                        id: 'mapbox/streets-v11',
+                        tileSize: 512,
+                        zoomOffset: -1,
+                        noWrap: true,
+                        minZoom: 3,
+                        maxZoom: 9,
+                    })
+
+                    L.control.scale({
+                        metric: 'true'
+                    }).addTo(mymap);
+
+                    mymap.setMaxBounds(mymap.getBounds());
+
+                    var seaBedLayer = L.tileLayer.wms(seaBed, {
+                        layers: '0',
+                        format: 'image/png8',
+                        noWrap: true,
+                        minZoom: 3,
+                        maxZoom: 9,
+                        transparent: 'true'
+                    });
+
+                    var commercialFishLayer = L.tileLayer.wms(fishes, {
+                        layers: '0',
+                        format: 'image/png8',
+                        noWrap: true,
+                        minZoom: 3,
+                        maxZoom: 9,
+                        transparent: 'true'
+                    });
+
+                    var seaUsageRulesMaritimeLayer = L.tileLayer.wms(seaUsageRulesMaritime, {
+                        layers: '0',
+                        format: 'image/png8',
+                        noWrap: true,
+                        minZoom: 3,
+                        maxZoom: 9,
+                        transparent: 'true'
+                    });
+
+                    var seaUsageRulesRegulatoryLayer = L.tileLayer.wms(seaUsageRulesRegulatory, {
+                        layers: '0',
+                        format: 'image/png8',
+                        noWrap: true, 
+                        minZoom: 3,
+                        maxZoom: 9,
+                        transparent: 'true'
+                    });
+
+                    var spatialDataMapLayer = L.tileLayer.wms(spatialData, {
+                        layers: '0',
+                        format: 'image/png8',
+                        noWrap: true, 
+                        minZoom: 3,
+                        maxZoom: 9,
+                        transparent: 'true'
+                    });
+
+                    var seismicProfilesLayer = L.tileLayer.wms(seismicProfiles, {
+                        layers: '0',
+                        format: 'image/png8',
+                        noWrap: true,
+                        minZoom: 3,
+                        maxZoom: 9,
+                        transparent: 'true'
+                    });
+
+                    var basemaps = {
+                        "Primary Layer": primaryLayer,
+                    };
+
+                    var fishesMap = {
+                        "Sea sediments": seaBedLayer,
+                        "Conditions for sea usage (Maritime plan)": seaUsageRulesMaritimeLayer,
+                        'Spatial sea layout': spatialDataMapLayer,
+                        "Seismic profiles": seismicProfilesLayer,
+                        "Important fish species": commercialFishLayer,
+                        "Conditions for sea usage (Regulatory framework)": seaUsageRulesRegulatoryLayer
+                    };
+
+                    L.control.layers(basemaps, fishesMap).addTo(mymap);
+                </script>
+                <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        </div>
+        <footer class="bg-dark text-center text-white">
+            <div class="container p-4">
+                <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+                Author: Toms Bauģis IT3
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>
